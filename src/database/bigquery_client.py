@@ -89,11 +89,11 @@ def get_substations(client, dist_id, dataset_id="BDGD24"):
     """
     return client.query(query).to_geodataframe(geography_column='Shape')
 
-def geo2dist(client, lat, lon, dataset_id="BDGD24", table_id="UNGRAPHVIEW", tab_id="SSDMT", top_x=10):
+def geo2dist(client, lat, lon, dataset_id="BDGD24", table_id="UNGRAPHVIEW", tab_id="SSDMT", top_x=5):
     """Busca espacial dos circuitos/alimentadores MT mais proximos de um ponto (Lat/Lon)"""
     sql = f"""
         SELECT DIST_NOME, DIST, CONJ, SUB_NOME, SUB, UNTRAT, CTXT, 
-               ROUND(ST_DISTANCE(ST_GEOGPOINT(@longitude, @latitude), Shape)) AS distance, Shape 
+               ROUND(ST_DISTANCE(ST_GEOGPOINT({lon}, {lat}), Shape)) AS distance, Shape 
         FROM `{getattr(client, 'project', 'poc-sagis')}.{dataset_id}.{table_id}` 
         WHERE TAB='{tab_id}' 
         ORDER BY distance LIMIT {top_x}
